@@ -1,0 +1,524 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧教室监控系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h2 i {
+            color: #667eea;
+        }
+        
+        .sensor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .sensor-item:last-child {
+            border-bottom: none;
+        }
+        
+        .sensor-name {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .sensor-value {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .sensor-value.temp { color: #ff6b6b; }
+        .sensor-value.humi { color: #4ecdc4; }
+        .sensor-value.light { color: #ffd93d; }
+        .sensor-value.co2 { color: #6c5ce7; }
+        .sensor-value.pir { color: #00b894; }
+        
+        .device-control {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .device-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .device-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .device-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-on {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-off {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .device-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-on {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-on:hover {
+            background: #218838;
+        }
+        
+        .btn-off {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-off:hover {
+            background: #c82333;
+        }
+        
+        .btn-scene {
+            background: #6c5ce7;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-scene:hover {
+            background: #5b4fcf;
+        }
+        
+        .scene-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .chart-placeholder {
+            height: 250px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .update-time {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-school"></i> 智慧教室监控系统</h1>
+            <p>基于MQTT的智慧教室环境监控与节能系统</p>
+        </header>
+        
+        <div class="dashboard">
+            <!-- 传感器数据卡片 -->
+            <div class="card">
+                <h2><i class="fas fa-thermometer-half"></i> 实时传感器数据</h2>
+                <div id="sensorData">
+                    <div class="sensor-item">
+                        <span class="sensor-name">🌡️ 温度</span>
+                        <span class="sensor-value temp" id="tempValue">-- °C</span>
+                    </div>
+                    <div class="sensor-item">
+                        <span class="sensor-name">💧 湿度</span>
+                        <span class="sensor-value humi" id="humiValue">-- %</span>
+                    </div>
+                    <div class="sensor-item">
+                        <span class="sensor-name">☀️ 光照</span>
+                        <span class="sensor-value light" id="lightValue">-- lux</span>
+                    </div>
+                    <div class="sensor-item">
+                        <span class="sensor-name">🌫️ CO2浓度</span>
+                        <span class="sensor-value co2" id="co2Value">-- ppm</span>
+                    </div>
+                    <div class="sensor-item">
+                        <span class="sensor-name">👤 人体检测</span>
+                        <span class="sensor-value pir" id="pirValue">--</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 设备控制卡片 -->
+            <div class="card">
+                <h2><i class="fas fa-sliders-h"></i> 设备控制</h2>
+                <div class="device-control" id="deviceControl">
+                    <!-- 设备控制项会通过JavaScript动态生成 -->
+                </div>
+                
+                <h2 style="margin-top: 25px;"><i class="fas fa-cogs"></i> 场景模式</h2>
+                <div class="scene-controls">
+                    <button class="btn btn-scene" onclick="setSceneMode('lecture')">
+                        <i class="fas fa-chalkboard-teacher"></i> 上课模式
+                    </button>
+                    <button class="btn btn-scene" onclick="setSceneMode('exam')">
+                        <i class="fas fa-graduation-cap"></i> 考试模式
+                    </button>
+                    <button class="btn btn-scene" onclick="setSceneMode('energy')">
+                        <i class="fas fa-leaf"></i> 节能模式
+                    </button>
+                    <button class="btn btn-scene" onclick="setSceneMode('auto')">
+                        <i class="fas fa-robot"></i> 自动模式
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-line"></i> 温度变化趋势</h3>
+                <div class="chart-placeholder">
+                    温度图表区域（可集成Chart.js）
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-bar"></i> CO2浓度变化</h3>
+                <div class="chart-placeholder">
+                    CO2图表区域（可集成Chart.js）
+                </div>
+            </div>
+        </div>
+        
+        <div class="update-time">
+            最后更新: <span id="updateTime">--:--:--</span>
+        </div>
+    </div>
+    
+    <script>
+        // 全局变量
+        let currentScene = 'auto';
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAllData();
+            setInterval(updateAllData, 3000); // 每3秒更新一次
+            
+            // 初始加载设备控制界面
+            loadDeviceControls();
+        });
+        
+        // 更新所有数据
+        async function updateAllData() {
+            try {
+                // 获取传感器数据
+                const response = await fetch('/api/sensor_data');
+                const data = await response.json();
+                
+                if (data.success) {
+                    // 更新传感器显示
+                    document.getElementById('tempValue').textContent = data.data.temperature.toFixed(1) + ' °C';
+                    document.getElementById('humiValue').textContent = data.data.humidity + ' %';
+                    document.getElementById('lightValue').textContent = data.data.light + ' lux';
+                    document.getElementById('co2Value').textContent = data.data.co2 + ' ppm';
+                    document.getElementById('pirValue').textContent = data.data.pir === 1 ? '有人 👤' : '无人';
+                    
+                    // 更新设备状态
+                    updateDeviceStatus();
+                    
+                    // 更新时间
+                    const now = new Date();
+                    document.getElementById('updateTime').textContent = 
+                        now.getHours().toString().padStart(2, '0') + ':' +
+                        now.getMinutes().toString().padStart(2, '0') + ':' +
+                        now.getSeconds().toString().padStart(2, '0');
+                }
+            } catch (error) {
+                console.error('获取数据失败:', error);
+            }
+        }
+        
+        // 加载设备控制界面
+        async function loadDeviceControls() {
+            try {
+                const response = await fetch('/api/devices');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const deviceControl = document.getElementById('deviceControl');
+                    deviceControl.innerHTML = '';
+                    
+                    // 生成每个设备的控制界面
+                    data.devices.actuators.forEach(device => {
+                        const deviceItem = document.createElement('div');
+                        deviceItem.className = 'device-item';
+                        deviceItem.id = `device-${device.id}`;
+                        
+                        const status = device.status || 'off';
+                        const statusText = status === 'on' ? '开启' : 
+                                          status === 'off' ? '关闭' : 
+                                          status === 'open' ? '打开' : 
+                                          status === 'closed' ? '关闭' : status;
+                        
+                        deviceItem.innerHTML = `
+                            <div class="device-header">
+                                <span class="device-name">${getDeviceIcon(device.type)} ${device.id}</span>
+                                <span class="device-status status-${status}">${statusText}</span>
+                            </div>
+                            <div class="device-actions">
+                                <button class="btn btn-on" onclick="controlDevice('${device.id}', 'on')">
+                                    开启
+                                </button>
+                                <button class="btn btn-off" onclick="controlDevice('${device.id}', 'off')">
+                                    关闭
+                                </button>
+                                ${device.type === 'curtain' ? `
+                                    <button class="btn btn-on" onclick="controlDevice('${device.id}', 'open')">
+                                        打开
+                                    </button>
+                                    <button class="btn btn-off" onclick="controlDevice('${device.id}', 'close')">
+                                        关闭
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `;
+                        
+                        deviceControl.appendChild(deviceItem);
+                    });
+                }
+            } catch (error) {
+                console.error('加载设备失败:', error);
+            }
+        }
+        
+        // 更新设备状态显示
+        async function updateDeviceStatus() {
+            try {
+                const response = await fetch('/api/devices');
+                const data = await response.json();
+                
+                if (data.success) {
+                    data.devices.actuators.forEach(device => {
+                        const deviceElement = document.getElementById(`device-${device.id}`);
+                        if (deviceElement) {
+                            const status = device.status || 'off';
+                            const statusElement = deviceElement.querySelector('.device-status');
+                            
+                            // 更新状态文本
+                            const statusText = status === 'on' ? '开启' : 
+                                              status === 'off' ? '关闭' : 
+                                              status === 'open' ? '打开' : 
+                                              status === 'closed' ? '关闭' : status;
+                            statusElement.textContent = statusText;
+                            
+                            // 更新状态类
+                            statusElement.className = 'device-status';
+                            statusElement.classList.add(`status-${status}`);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('更新设备状态失败:', error);
+            }
+        }
+        
+        // 控制设备
+        async function controlDevice(deviceId, command) {
+            try {
+                const response = await fetch('/api/control', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        device_id: deviceId,
+                        command: command,
+                        reason: '手动控制'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`设备 ${deviceId} 已执行 ${command}`);
+                    updateDeviceStatus();
+                } else {
+                    alert('控制失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                console.error('控制设备失败:', error);
+                alert('控制设备失败，请检查网络连接');
+            }
+        }
+        
+        // 设置场景模式
+        async function setSceneMode(scene) {
+            try {
+                const response = await fetch('/api/scene', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ scene: scene })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentScene = scene;
+                    alert(`已切换到 ${scene} 模式`);
+                    
+                    // 重新加载设备控制界面
+                    loadDeviceControls();
+                }
+            } catch (error) {
+                console.error('设置场景模式失败:', error);
+            }
+        }
+        
+        // 获取设备图标
+        function getDeviceIcon(type) {
+            const icons = {
+                'light': '💡',
+                'fan': '🌀',
+                'ac': '❄️',
+                'curtain': '🪟'
+            };
+            return icons[type] || '⚙️';
+        }
+    </script>
+</body>
+</html>
