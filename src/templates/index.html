@@ -1,0 +1,48 @@
+
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>智慧教室监控系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 1. 设备可视化区域 -->
+        <div class="classroom-layout">
+            <div class="device" id="light1" data-type="light">
+                < img src="/static/images/light.png" alt="灯光">
+                <span>主灯</span>
+            </div>
+            <div class="device" id="ac1" data-type="ac">
+                < img src="/static/images/ac.png" alt="空调">
+                <span>空调</span>
+            </div>
+            <!-- 更多设备... -->
+        </div>
+        
+        <!-- 2. 实时数据图表 -->
+        <div class="charts">
+            <canvas id="tempChart"></canvas>
+            <canvas id="co2Chart"></canvas>
+        </div>
+        
+        <!-- 3. 控制面板 -->
+        <div class="control-panel">
+            <h3>场景模式</h3>
+            <button onclick="setMode('lecture')">上课模式</button>
+            <button onclick="setMode('exam')">考试模式</button>
+            <button onclick="setMode('energy')">节能模式</button>
+        </div>
+        
+        <!-- 4. 能耗统计 -->
+        <div class="energy-stats">
+            <h3>今日能耗统计</h3>
+            <div id="energyChart"></div>
+        </div>
+    </div>
+    
+    <script src="/static/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
